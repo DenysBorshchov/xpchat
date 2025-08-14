@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>XPchat - Мобильный мессенджер</title>
+    
+    <!-- PWA мета-теги -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="XPchat">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    
+    <!-- PWA манифест -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Иконки для разных платформ -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-180x180.png">
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Боковая панель с контактами -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-comments"></i>
+                    <span>XPchat</span>
+                </div>
+                <div class="online-status" id="onlineStatus">🟢 Онлайн</div>
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Поиск чатов..." id="searchInput">
+                </div>
+            </div>
+            
+            <div class="contacts-list" id="contactsList">
+                <!-- Контакты будут добавляться динамически -->
+            </div>
+            
+            <!-- Мобильное меню -->
+            <div class="mobile-menu" id="mobileMenu">
+                <div class="menu-header">
+                    <h3>Меню XPchat</h3>
+                    <button class="close-menu-btn" id="closeMenuBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="menu-items">
+                    <a href="#" class="menu-item" id="menuProfile">
+                        <i class="fas fa-user"></i>
+                        <span>Профиль</span>
+                    </a>
+                    <a href="#" class="menu-item" id="menuSettings">
+                        <i class="fas fa-cog"></i>
+                        <span>Настройки</span>
+                    </a>
+                    <a href="#" class="menu-item" id="menuHelp">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Помощь</span>
+                    </a>
+                    <a href="#" class="menu-item" id="menuAbout">
+                        <i class="fas fa-info-circle"></i>
+                        <span>О приложении</span>
+                    </a>
+                    <a href="#" class="menu-item" id="menuInstall">
+                        <i class="fas fa-download"></i>
+                        <span>Установить приложение</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основная область чата -->
+        <div class="chat-area">
+            <!-- Заголовок чата -->
+            <div class="chat-header" id="chatHeader">
+                <div class="chat-info">
+                    <button class="back-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="contact-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3 id="currentContactName">Выберите чат</h3>
+                        <span id="contactStatus">Начните общение</span>
+                        <div id="typingIndicator" class="typing-indicator" style="display: none;"></div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-btn" id="voiceCallBtn">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <button class="action-btn" id="videoCallBtn">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button class="action-btn" id="moreOptionsBtn">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Область сообщений -->
+            <div class="messages-container" id="messagesContainer">
+                <div class="welcome-message" id="welcomeMessage">
+                    <div class="welcome-content">
+                        <i class="fas fa-comments"></i>
+                        <h2>Добро пожаловать в XPchat!</h2>
+                        <p>Выберите чат из списка слева или создайте новый</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Панель ввода сообщения -->
+            <div class="message-input-container" id="messageInputContainer">
+                <div class="input-wrapper">
+                    <button class="attach-btn" id="attachBtn">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <div class="message-input-box">
+                        <input type="text" placeholder="Введите сообщение..." id="messageInput">
+                        <button class="emoji-btn" id="emojiBtn">
+                            <i class="fas fa-smile"></i>
+                        </button>
+                    </div>
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Баннер установки PWA -->
+    <div class="install-banner" id="installBanner">
+        <div class="banner-content">
+            <i class="fas fa-download"></i>
+            <span>Установить XPchat как приложение</span>
+        </div>
+        <div class="banner-actions">
+            <button class="banner-btn" id="installBtn">Установить</button>
+            <button class="banner-btn banner-close" id="closeBannerBtn">✕</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для нового чата -->
+    <div class="modal" id="newChatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Новый чат</h3>
+                <button class="close-btn" id="closeModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="contactName">Имя контакта:</label>
+                    <input type="text" id="contactName" placeholder="Введите имя">
+                </div>
+                <div class="input-group">
+                    <label for="contactPhone">Телефон (опционально):</label>
+                    <input type="tel" id="contactPhone" placeholder="+7 (999) 123-45-67">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelBtn">Отмена</button>
+                <button class="btn-primary" id="createChatBtn">Создать чат</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="pwa.js"></script>
+</body>
+</html>
