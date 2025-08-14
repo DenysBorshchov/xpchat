@@ -59,6 +59,26 @@ class XPchatPWA {
             return;
         }
         
+        // Автоматически показываем баннер на мобильных устройствах через 3 секунды
+        if (this.isMobileDevice()) {
+            setTimeout(() => {
+                if (!this.isInstalled && !this.isStandalone) {
+                    installBanner.style.display = 'flex';
+                    installBanner.classList.add('show');
+                    
+                    // Автоматически скрываем через 10 секунд
+                    setTimeout(() => {
+                        if (installBanner.style.display === 'flex') {
+                            installBanner.classList.remove('show');
+                            setTimeout(() => {
+                                installBanner.style.display = 'none';
+                            }, 300);
+                        }
+                    }, 10000);
+                }
+            }, 3000);
+        }
+        
         // Обработчик события beforeinstallprompt
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -66,6 +86,7 @@ class XPchatPWA {
             
             // Показываем баннер установки
             installBanner.style.display = 'flex';
+            installBanner.classList.add('show');
             
             // Обработчик кнопки установки
             installBtn.addEventListener('click', async () => {
@@ -76,7 +97,10 @@ class XPchatPWA {
                     if (outcome === 'accepted') {
                         console.log('XPchat PWA: Приложение установлено');
                         this.isInstalled = true;
-                        installBanner.style.display = 'none';
+                        installBanner.classList.remove('show');
+                        setTimeout(() => {
+                            installBanner.style.display = 'none';
+                        }, 300);
                     }
                     
                     this.deferredPrompt = null;
@@ -86,13 +110,19 @@ class XPchatPWA {
         
         // Обработчик закрытия баннера
         closeBannerBtn.addEventListener('click', () => {
-            installBanner.style.display = 'none';
+            installBanner.classList.remove('show');
+            setTimeout(() => {
+                installBanner.style.display = 'none';
+            }, 300);
         });
         
         // Скрываем баннер при успешной установке
         window.addEventListener('appinstalled', () => {
             this.isInstalled = true;
-            installBanner.style.display = 'none';
+            installBanner.classList.remove('show');
+            setTimeout(() => {
+                installBanner.style.display = 'none';
+            }, 300);
             console.log('XPchat PWA: Приложение установлено через событие appinstalled');
         });
     }
@@ -375,6 +405,12 @@ class XPchatPWA {
         `;
         
         alert(instructions);
+    }
+
+    // Проверка мобильного устройства
+    isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+               (window.innerWidth <= 768);
     }
 }
 

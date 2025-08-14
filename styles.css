@@ -843,3 +843,162 @@ body {
     color: #999;
     margin-top: 2px;
 }
+
+/* Улучшенный баннер установки PWA */
+.install-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: none;
+    align-items: center;
+    gap: 15px;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 90vw;
+    width: auto;
+}
+
+.install-banner.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.install-banner .banner-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.install-banner .banner-content i {
+    font-size: 18px;
+    color: #ffd700;
+    animation: pulse 2s infinite;
+}
+
+.install-banner .banner-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.banner-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.banner-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.banner-btn.banner-close {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 12px;
+    min-width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-btn.banner-close:hover {
+    background: rgba(255, 0, 0, 0.3);
+}
+
+/* Анимация пульсации для иконки */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Мобильная оптимизация баннера */
+@media (max-width: 768px) {
+    .install-banner {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        transform: translateY(100px);
+        max-width: none;
+        width: auto;
+        padding: 18px 20px;
+        border-radius: 20px;
+    }
+    
+    .install-banner.show {
+        transform: translateY(0);
+    }
+    
+    .install-banner .banner-content {
+        font-size: 13px;
+    }
+    
+    .banner-btn {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+    
+    .banner-btn.banner-close {
+        padding: 10px 14px;
+        min-width: 36px;
+    }
+}
+
+/* Анимация появления для мобильных устройств */
+@media (max-width: 768px) {
+    .install-banner {
+        animation: slideUpMobile 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideUpMobile {
+        from {
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+}
+
+/* Улучшенная анимация для десктопа */
+@media (min-width: 769px) {
+    .install-banner {
+        animation: slideUpDesktop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideUpDesktop {
+        from {
+            transform: translateX(-50%) translateY(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    }
+}
