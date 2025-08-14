@@ -1,0 +1,73 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#43e97b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#38f9d7;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle with gradient and shadow -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad1)" stroke="url(#grad2)" stroke-width="8" filter="url(#shadow)"/>
+  
+  <!-- Main chat bubble -->
+  <path d="M160 144 L352 144 Q384 144 384 176 L384 288 Q384 320 352 320 L224 320 L192 352 L192 320 L160 320 Q128 320 128 288 L128 176 Q128 144 160 144 Z" 
+        fill="white" opacity="0.95" filter="url(#shadow)"/>
+  
+  <!-- Secondary chat bubble -->
+  <path d="M208 208 L288 208 Q304 208 304 224 L304 256 Q304 272 288 272 L240 272 L208 304 L208 272 L208 272 Q192 272 192 256 L192 224 Q192 208 208 208 Z" 
+        fill="url(#grad2)" opacity="0.8"/>
+  
+  <!-- Third chat bubble -->
+  <path d="M240 240 L272 240 Q280 240 280 248 L280 256 Q280 264 272 264 L256 264 L240 280 L240 264 L240 264 Q232 264 232 256 L232 248 Q232 240 240 240 Z" 
+        fill="url(#grad3)" opacity="0.7"/>
+  
+  <!-- Fourth chat bubble -->
+  <path d="M320 192 L352 192 Q360 192 360 200 L360 208 Q360 216 352 216 L336 216 L320 232 L320 216 L320 216 Q312 216 312 208 L312 200 Q312 192 320 192 Z" 
+        fill="url(#grad4)" opacity="0.6"/>
+  
+  <!-- AI indicator with glow -->
+  <circle cx="384" cy="128" r="32" fill="url(#grad2)" filter="url(#glow)"/>
+  <text x="384" y="144" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="32" font-weight="bold">AI</text>
+  
+  <!-- Pro badge -->
+  <rect x="320" y="320" width="128" height="64" rx="32" fill="url(#grad2)" filter="url(#shadow)"/>
+  <text x="384" y="368" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="32" font-weight="bold">PRO</text>
+  
+  <!-- Decorative elements -->
+  <circle cx="128" cy="128" r="16" fill="url(#grad3)" opacity="0.6"/>
+  <circle cx="384" cy="384" r="12" fill="url(#grad3)" opacity="0.6"/>
+  <circle cx="128" cy="384" r="8" fill="url(#grad2)" opacity="0.5"/>
+  <circle cx="384" cy="128" r="8" fill="url(#grad4)" opacity="0.4"/>
+  
+  <!-- Connection lines -->
+  <path d="M160 256 L128 256" stroke="url(#grad3)" stroke-width="3" opacity="0.6"/>
+  <path d="M384 256 L352 256" stroke="url(#grad4)" stroke-width="3" opacity="0.6"/>
+  <path d="M256 160 L256 128" stroke="url(#grad2)" stroke-width="3" opacity="0.6"/>
+  <path d="M256 384 L256 352" stroke="url(#grad3)" stroke-width="3" opacity="0.6"/>
+  
+  <!-- Version indicator -->
+  <circle cx="448" cy="64" r="24" fill="url(#grad4)" opacity="0.8"/>
+  <text x="448" y="72" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">2.0</text>
+</svg>

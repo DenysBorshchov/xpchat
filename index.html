@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>XPchat - Мобильный мессенджер</title>
+    <title>XPchat Pro - Улучшенный мессенджер</title>
     
     <!-- PWA мета-теги -->
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="XPchat">
+    <meta name="apple-mobile-web-app-title" content="XPchat Pro">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="msapplication-TileColor" content="#667eea">
     <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
@@ -24,30 +24,73 @@
     
     <!-- Стили -->
     <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Preload критических ресурсов -->
+    <link rel="preload" href="script.js" as="script">
+    <link rel="preload" href="pwa.js" as="script">
+    
+    <!-- Meta теги для SEO -->
+    <meta name="description" content="XPchat Pro - современный мессенджер с AI помощником, групповыми чатами и продвинутыми функциями">
+    <meta name="keywords" content="мессенджер, чат, AI, PWA, мобильное приложение">
+    <meta name="author" content="XPchat Team">
+    
+    <!-- Open Graph теги -->
+    <meta property="og:title" content="XPchat Pro - Улучшенный мессенджер">
+    <meta property="og:description" content="Современный мессенджер с AI помощником и продвинутыми функциями">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-domain.com">
+    <meta property="og:image" content="/icons/icon-512x512.png">
 </head>
 <body>
-    <div class="app-container">
+    <!-- Индикатор загрузки -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-comments"></i>
+                <span>XPchat Pro</span>
+            </div>
+            <div class="loading-spinner"></div>
+            <p>Загрузка приложения...</p>
+        </div>
+    </div>
+
+    <div class="app-container" id="appContainer" style="display: none;">
         <!-- Боковая панель с контактами -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-comments"></i>
-                    <span>XPchat</span>
+                    <span>XPchat Pro</span>
+                    <div class="version-badge">v2.0</div>
                 </div>
-                <div class="online-status" id="onlineStatus">🟢 Онлайн</div>
-                <button class="new-chat-btn" id="newChatBtn">
-                    <i class="fas fa-plus"></i>
-                </button>
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <div class="online-status" id="onlineStatus">
+                    <div class="status-indicator"></div>
+                    <span>🟢 Онлайн</span>
+                </div>
+                <div class="header-actions">
+                                                <button class="new-chat-btn" id="newChatBtn" title="Новый чат">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="ai-assistant-btn" id="aiAssistantBtn" title="AI Помощник">
+                                <i class="fas fa-robot"></i>
+                            </button>
+                            <button class="theme-toggle-btn" id="themeToggleBtn" title="Сменить тему">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                            <button class="mobile-menu-btn" id="mobileMenuBtn" title="Меню">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                </div>
             </div>
             
             <div class="search-container">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Поиск чатов..." id="searchInput">
+                    <button class="search-clear-btn" id="searchClearBtn" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             </div>
             
@@ -58,7 +101,7 @@
             <!-- Мобильное меню -->
             <div class="mobile-menu" id="mobileMenu">
                 <div class="menu-header">
-                    <h3>Меню XPchat</h3>
+                    <h3>Меню XPchat Pro</h3>
                     <button class="close-menu-btn" id="closeMenuBtn">
                         <i class="fas fa-times"></i>
                     </button>
@@ -71,6 +114,14 @@
                     <a href="#" class="menu-item" id="menuSettings">
                         <i class="fas fa-cog"></i>
                         <span>Настройки</span>
+                    </a>
+                    <a href="#" class="menu-item" id="menuAI">
+                        <i class="fas fa-robot"></i>
+                        <span>AI Помощник</span>
+                    </a>
+                    <a href="#" class="menu-item" id="menuGroups">
+                        <i class="fas fa-users"></i>
+                        <span>Групповые чаты</span>
                     </a>
                     <a href="#" class="menu-item" id="menuHelp">
                         <i class="fas fa-question-circle"></i>
@@ -96,23 +147,30 @@
                     <button class="back-btn" id="backBtn">
                         <i class="fas fa-arrow-left"></i>
                     </button>
-                    <div class="contact-avatar">
+                    <div class="contact-avatar" id="contactAvatar">
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="contact-details">
                         <h3 id="currentContactName">Выберите чат</h3>
                         <span id="contactStatus">Начните общение</span>
-                        <div id="typingIndicator" class="typing-indicator" style="display: none;"></div>
+                        <div id="typingIndicator" class="typing-indicator" style="display: none;">
+                            <span>Печатает</span>
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="chat-actions">
-                    <button class="action-btn" id="voiceCallBtn">
+                    <button class="action-btn" id="voiceCallBtn" title="Голосовой звонок">
                         <i class="fas fa-phone"></i>
                     </button>
-                    <button class="action-btn" id="videoCallBtn">
+                    <button class="action-btn" id="videoCallBtn" title="Видеозвонок">
                         <i class="fas fa-video"></i>
                     </button>
-                    <button class="action-btn" id="moreOptionsBtn">
+                    <button class="action-btn" id="moreOptionsBtn" title="Дополнительно">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                 </div>
@@ -123,8 +181,22 @@
                 <div class="welcome-message" id="welcomeMessage">
                     <div class="welcome-content">
                         <i class="fas fa-comments"></i>
-                        <h2>Добро пожаловать в XPchat!</h2>
+                        <h2>Добро пожаловать в XPchat Pro!</h2>
                         <p>Выберите чат из списка слева или создайте новый</p>
+                        <div class="welcome-features">
+                            <div class="feature-item">
+                                <i class="fas fa-robot"></i>
+                                <span>AI Помощник</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-users"></i>
+                                <span>Групповые чаты</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-file-upload"></i>
+                                <span>Обмен файлами</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,18 +204,35 @@
             <!-- Панель ввода сообщения -->
             <div class="message-input-container" id="messageInputContainer">
                 <div class="input-wrapper">
-                    <button class="attach-btn" id="attachBtn">
+                    <button class="attach-btn" id="attachBtn" title="Прикрепить файл">
                         <i class="fas fa-paperclip"></i>
                     </button>
                     <div class="message-input-box">
                         <input type="text" placeholder="Введите сообщение..." id="messageInput">
-                        <button class="emoji-btn" id="emojiBtn">
+                        <button class="emoji-btn" id="emojiBtn" title="Эмодзи">
                             <i class="fas fa-smile"></i>
                         </button>
                     </div>
-                    <button class="send-btn" id="sendBtn">
+                    <button class="send-btn" id="sendBtn" title="Отправить">
                         <i class="fas fa-paper-plane"></i>
                     </button>
+                </div>
+                
+                <!-- Панель эмодзи -->
+                <div class="emoji-panel" id="emojiPanel" style="display: none;">
+                    <div class="emoji-categories">
+                        <button class="emoji-category active" data-category="recent">🕒</button>
+                        <button class="emoji-category" data-category="smileys">😊</button>
+                        <button class="emoji-category" data-category="animals">🐱</button>
+                        <button class="emoji-category" data-category="food">🍕</button>
+                        <button class="emoji-category" data-category="activities">⚽</button>
+                        <button class="emoji-category" data-category="travel">✈️</button>
+                        <button class="emoji-category" data-category="objects">💡</button>
+                        <button class="emoji-category" data-category="symbols">❤️</button>
+                    </div>
+                    <div class="emoji-grid" id="emojiGrid">
+                        <!-- Эмодзи будут добавляться динамически -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -153,7 +242,7 @@
     <div class="install-banner" id="installBanner">
         <div class="banner-content">
             <i class="fas fa-download"></i>
-            <span>Установить XPchat как приложение</span>
+            <span>Установить XPchat Pro как приложение</span>
         </div>
         <div class="banner-actions">
             <button class="banner-btn" id="installBtn">Установить</button>
@@ -179,6 +268,14 @@
                     <label for="contactPhone">Телефон (опционально):</label>
                     <input type="tel" id="contactPhone" placeholder="+7 (999) 123-45-67">
                 </div>
+                <div class="input-group">
+                    <label for="contactType">Тип чата:</label>
+                    <select id="contactType">
+                        <option value="personal">Личный чат</option>
+                        <option value="group">Групповой чат</option>
+                        <option value="ai">AI Помощник</option>
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="cancelBtn">Отмена</button>
@@ -187,7 +284,62 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-    <script src="pwa.js"></script>
+    <!-- Модальное окно настроек -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content settings-modal">
+            <div class="modal-header">
+                <h3>Настройки XPchat Pro</h3>
+                <button class="close-btn" id="closeSettingsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h4>Внешний вид</h4>
+                    <div class="setting-item">
+                        <label>Тема:</label>
+                        <select id="themeSelect">
+                            <option value="auto">Авто</option>
+                            <option value="light">Светлая</option>
+                            <option value="dark">Темная</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Размер шрифта:</label>
+                        <select id="fontSizeSelect">
+                            <option value="small">Маленький</option>
+                            <option value="medium">Средний</option>
+                            <option value="large">Большой</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4>Уведомления</h4>
+                    <div class="setting-item">
+                        <label>Звуковые уведомления:</label>
+                        <input type="checkbox" id="soundNotifications" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label>Push уведомления:</label>
+                        <input type="checkbox" id="pushNotifications">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="resetSettingsBtn">Сбросить</button>
+                <button class="btn-primary" id="saveSettingsBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div class="notifications-container" id="notificationsContainer"></div>
+
+    <!-- Скрипты -->
+                <script src="script.js"></script>
+            <script src="pwa.js"></script>
+            <script src="enhanced-features.js"></script>
+            <script src="ai-assistant.js"></script>
+            <script src="webrtc-calls.js"></script>
 </body>
 </html>
