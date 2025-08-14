@@ -794,10 +794,18 @@ body {
 
 .online-status.online {
     color: #28a745;
+    background: rgba(40, 167, 69, 0.2);
 }
 
 .online-status.offline {
     color: #dc3545;
+    background: rgba(220, 53, 69, 0.2);
+}
+
+.online-status.checking {
+    color: #ffc107;
+    background: rgba(255, 193, 7, 0.2);
+    animation: pulse 1.5s infinite;
 }
 
 /* Индикатор печати */
@@ -935,6 +943,118 @@ body {
     }
 }
 
+/* PWA уведомления */
+.pwa-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #667eea;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.pwa-notification.show {
+    transform: translateX(0);
+}
+
+.pwa-notification .notification-content h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.pwa-notification .notification-content p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+.pwa-notification .notification-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.pwa-notification .notification-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Типы уведомлений */
+.pwa-notification.success {
+    background: #28a745;
+    border-left: 4px solid #20c997;
+}
+
+.pwa-notification.error {
+    background: #dc3545;
+    border-left: 4px solid #c82333;
+}
+
+.pwa-notification.info {
+    background: #667eea;
+    border-left: 4px solid #5a6fd8;
+}
+
+.pwa-notification.warning {
+    background: #ffc107;
+    color: #333;
+    border-left: 4px solid #e0a800;
+}
+
+/* Анимация пульсации для проверки соединения */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Офлайн индикаторы */
+.offline-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #dc3545;
+    margin-left: 8px;
+    animation: pulse 2s infinite;
+}
+
+.online-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #28a745;
+    margin-left: 8px;
+}
+
 /* Мобильная оптимизация баннера */
 @media (max-width: 768px) {
     .install-banner {
@@ -1000,5 +1120,634 @@ body {
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+    }
+}
+
+/* ===== МОБИЛЬНАЯ ОПТИМИЗАЦИЯ ДЛЯ ТЕЛЕФОННЫХ ЭКРАНОВ ===== */
+
+/* Основные мобильные стили */
+@media (max-width: 480px) {
+    /* Контейнер приложения */
+    .app-container {
+        height: 100vh;
+        height: 100dvh; /* Для мобильных браузеров */
+        border-radius: 0;
+        margin: 0;
+        max-width: none;
+    }
+    
+    /* Боковая панель - полноэкранная на мобильных */
+    .sidebar {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        height: 100dvh;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #f8f9fa;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    /* Заголовок боковой панели */
+    .sidebar-header {
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+    }
+    
+    .logo {
+        font-size: 20px;
+    }
+    
+    .logo i {
+        font-size: 24px;
+    }
+    
+    /* Кнопка мобильного меню */
+    .mobile-menu-btn {
+        display: block !important;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 10px;
+        font-size: 18px;
+    }
+    
+    .mobile-menu-btn:hover,
+    .mobile-menu-btn:active {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+    }
+    
+    /* Поиск */
+    .search-container {
+        padding: 12px 20px;
+    }
+    
+    .search-box input {
+        padding: 15px 15px 15px 45px;
+        font-size: 16px; /* Предотвращает зум на iOS */
+        border-radius: 25px;
+    }
+    
+    .search-box i {
+        font-size: 18px;
+        left: 15px;
+    }
+    
+    /* Список контактов */
+    .contacts-list {
+        padding: 0;
+    }
+    
+    .contact-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f1f3f4;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-item:active {
+        background-color: #e9ecef;
+        transform: scale(0.98);
+    }
+    
+    .contact-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        margin-right: 15px;
+    }
+    
+    .contact-name {
+        font-size: 16px;
+        font-weight: 600;
+    }
+    
+    .contact-last-message {
+        font-size: 14px;
+        margin-top: 4px;
+    }
+    
+    .contact-time {
+        font-size: 12px;
+        margin-top: 4px;
+    }
+    
+    /* Основная область чата */
+    .chat-area {
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+    }
+    
+    /* Заголовок чата */
+    .chat-header {
+        padding: 15px 20px;
+        background: white;
+        border-bottom: 1px solid #e9ecef;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    /* Кнопка назад */
+    .back-btn {
+        display: block !important;
+        background: none;
+        border: none;
+        color: #667eea;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 10px;
+        margin-right: 15px;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .back-btn:hover,
+    .back-btn:active {
+        background-color: rgba(102, 126, 234, 0.1);
+    }
+    
+    /* Информация о контакте */
+    .contact-details h3 {
+        font-size: 18px;
+        margin-bottom: 2px;
+    }
+    
+    .contact-details span {
+        font-size: 13px;
+    }
+    
+    /* Кнопки действий */
+    .chat-actions {
+        gap: 8px;
+    }
+    
+    .action-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover,
+    .action-btn:active {
+        background: #f8f9fa;
+        color: #667eea;
+        transform: scale(1.1);
+    }
+    
+    /* Область сообщений */
+    .messages-container {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        flex: 1;
+        overflow-y: auto;
+    }
+    
+    .welcome-message {
+        padding: 40px 20px;
+    }
+    
+    .welcome-content i {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+    
+    .welcome-content h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+    
+    .welcome-content p {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    
+    /* Сообщения */
+    .message {
+        margin-bottom: 15px;
+    }
+    
+    .message-content {
+        max-width: 85%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        font-size: 15px;
+        line-height: 1.4;
+    }
+    
+    .message-time {
+        font-size: 11px;
+        margin-top: 4px;
+    }
+    
+    /* Панель ввода */
+    .message-input-container {
+        padding: 15px 20px;
+        background: white;
+        border-top: 1px solid #e9ecef;
+        position: sticky;
+        bottom: 0;
+    }
+    
+    .input-wrapper {
+        gap: 8px;
+        padding: 8px;
+        border-radius: 25px;
+        background: #f8f9fa;
+    }
+    
+    .message-input-box {
+        padding: 0 15px;
+        border-radius: 20px;
+    }
+    
+    .message-input-box input {
+        padding: 12px 0;
+        font-size: 16px; /* Предотвращает зум на iOS */
+        border: none;
+        outline: none;
+        background: transparent;
+    }
+    
+    /* Кнопки ввода */
+    .attach-btn, .emoji-btn, .send-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .send-btn {
+        background: #667eea;
+        color: white;
+    }
+    
+    .send-btn:hover,
+    .send-btn:active {
+        background: #5a6fd8;
+        transform: scale(1.1);
+    }
+    
+    .attach-btn:hover,
+    .emoji-btn:hover,
+    .attach-btn:active,
+    .emoji-btn:active {
+        background: #e9ecef;
+        color: #667eea;
+    }
+    
+    /* Модальные окна */
+    .modal-content {
+        width: 90%;
+        max-width: 400px;
+        margin: 20px;
+        border-radius: 15px;
+    }
+    
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .modal-header h3 {
+        font-size: 20px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .input-group {
+        margin-bottom: 20px;
+    }
+    
+    .input-group label {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+    }
+    
+    .input-group input {
+        padding: 15px;
+        font-size: 16px;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .input-group input:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .modal-footer {
+        padding: 20px;
+        border-top: 1px solid #e9ecef;
+        gap: 10px;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        min-height: 44px;
+    }
+    
+    /* Мобильное меню */
+    .mobile-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 2000;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .mobile-menu.show {
+        display: flex;
+        opacity: 1;
+    }
+    
+    .mobile-menu .menu-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .mobile-menu .menu-header h3 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 600;
+    }
+    
+    .close-menu-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .close-menu-btn:hover,
+    .close-menu-btn:active {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .mobile-menu .menu-items {
+        margin-top: 100px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 15px;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        font-weight: 500;
+    }
+    
+    .menu-item:hover,
+    .menu-item:active {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .menu-item i {
+        font-size: 22px;
+        color: #667eea;
+        width: 30px;
+        text-align: center;
+    }
+    
+    /* Баннер установки для мобильных */
+    .install-banner {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        transform: translateY(100px);
+        max-width: none;
+        width: auto;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .install-banner.show {
+        transform: translateY(0);
+    }
+    
+    .install-banner .banner-content {
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .banner-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        min-height: 44px;
+    }
+    
+    /* PWA уведомления для мобильных */
+    .pwa-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100%);
+        padding: 20px;
+        border-radius: 15px;
+    }
+    
+    .pwa-notification.show {
+        transform: translateY(0);
+    }
+    
+    .pwa-notification .notification-content h4 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .pwa-notification .notification-content p {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+    
+    /* Безопасная зона для iPhone */
+    @supports (padding: max(0px)) {
+        .app-container {
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            padding-left: max(20px, env(safe-area-inset-left));
+            padding-right: max(20px, env(safe-area-inset-right));
+        }
+        
+        .sidebar {
+            padding-top: max(0px, env(safe-area-inset-top));
+            padding-bottom: max(0px, env(safe-area-inset-bottom));
+        }
+        
+        .chat-area {
+            padding-top: max(0px, env(safe-area-inset-top));
+            padding-bottom: max(0px, env(safe-area-inset-bottom));
+        }
+    }
+    
+    /* Улучшенная прокрутка для мобильных */
+    .messages-container::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .messages-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .messages-container::-webkit-scrollbar-thumb {
+        background: rgba(102, 126, 234, 0.3);
+        border-radius: 2px;
+    }
+    
+    .messages-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(102, 126, 234, 0.5);
+    }
+    
+    /* Анимации для мобильных */
+    @keyframes slideInFromLeft {
+        from {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideInFromRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .sidebar.show {
+        animation: slideInFromLeft 0.3s ease;
+    }
+    
+    .chat-area {
+        animation: slideInFromRight 0.3s ease;
+    }
+}
+
+/* Планшеты и средние экраны */
+@media (min-width: 481px) and (max-width: 768px) {
+    .app-container {
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
+        margin: 0;
+        max-width: none;
+    }
+    
+    .sidebar {
+        width: 320px;
+        position: absolute;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .chat-area {
+        width: 100%;
+    }
+    
+    .mobile-menu-btn {
+        display: block !important;
+    }
+    
+    .back-btn {
+        display: block !important;
+    }
+}
+
+/* Большие мобильные экраны */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .app-container {
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    .sidebar {
+        width: 300px;
+    }
+    
+    .chat-area {
+        flex: 1;
     }
 }

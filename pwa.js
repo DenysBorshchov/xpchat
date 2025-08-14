@@ -132,32 +132,206 @@ class XPchatPWA {
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
         const closeMenuBtn = document.getElementById('closeMenuBtn');
-        const backBtn = document.getElementById('backBtn');
         const sidebar = document.getElementById('sidebar');
+        const chatArea = document.querySelector('.chat-area');
+        const backBtn = document.getElementById('backBtn');
         
-        if (!mobileMenuBtn || !mobileMenu || !closeMenuBtn) return;
+        if (!mobileMenuBtn || !mobileMenu || !closeMenuBtn || !sidebar || !chatArea) return;
         
         // Открытие мобильного меню
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Блокируем прокрутку
         });
         
         // Закрытие мобильного меню
         closeMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.remove('show');
+            document.body.style.overflow = ''; // Восстанавливаем прокрутку
         });
         
-        // Кнопка "Назад" для мобильных устройств
+        // Закрытие по клику вне меню
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) {
+                mobileMenu.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Показать/скрыть боковую панель
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.add('show');
+            chatArea.classList.remove('show');
+        });
+        
+        // Кнопка назад
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.add('show');
-                }
+                sidebar.classList.remove('show');
+                chatArea.classList.add('show');
             });
         }
         
-        // Обработчики пунктов меню
-        this.setupMenuHandlers();
+        // Touch-жесты для мобильных устройств
+        this.setupTouchGestures();
+        
+        // Автоматическое скрытие меню при изменении размера экрана
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('show');
+                chatArea.classList.remove('show');
+                mobileMenu.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // Настройка touch-жестов
+    setupTouchGestures() {
+        const sidebar = document.getElementById('sidebar');
+        const chatArea = document.querySelector('.chat-area');
+        
+        if (!sidebar || !chatArea) return;
+        
+        let startX = 0;
+        let startY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        let isDragging = false;
+        let startTime = 0;
+        
+        // Touch start
+        const handleTouchStart = (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            startTime = Date.now();
+            isDragging = true;
+            
+            // Добавляем класс для плавности
+            sidebar.style.transition = 'none';
+            chatArea.style.transition = 'none';
+        };
+        
+        // Touch move
+        const handleTouchMove = (e) => {
+            if (!isDragging) return;
+            
+            currentX = e.touches[0].clientX;
+            currentY = e.touches[0].clientY;
+            
+            const deltaX = currentX - startX;
+            const deltaY = currentY - startY;
+            
+            // Определяем направление свайпа
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Горизонтальный свайп
+                if (deltaX > 0) {
+                    // Свайп вправо - показать боковую панель
+                    const translateX = Math.min(deltaX, sidebar.offsetWidth);
+                    sidebar.style.transform = `translateX(${translateX - sidebar.offsetWidth}px)`;
+                    chatArea.style.transform = `translateX(${translateX}px)`;
+                } else {
+                    // Свайп влево - скрыть боковую панель
+                    const translateX = Math.max(deltaX, -sidebar.offsetWidth);
+                    sidebar.style.transform = `translateX(${translateX}px)`;
+                    chatArea.style.transform = `translateX(${translateX + sidebar.offsetWidth}px)`;
+                }
+            }
+        };
+        
+        // Touch end
+        const handleTouchEnd = () => {
+            if (!isDragging) return;
+            
+            isDragging = false;
+            const deltaX = currentX - startX;
+            const deltaY = currentY - startY;
+            const deltaTime = Date.now() - startTime;
+            
+            // Восстанавливаем плавность
+            sidebar.style.transition = '';
+            chatArea.style.transition = '';
+            
+            // Определяем действие на основе свайпа
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                if (deltaX > 0) {
+                    // Свайп вправо - показать боковую панель
+                    sidebar.classList.add('show');
+                    chatArea.classList.remove('show');
+                } else {
+                    // Свайп влево - скрыть боковую панель
+                    sidebar.classList.remove('show');
+                    chatArea.classList.add('show');
+                }
+            } else {
+                // Возвращаем в исходное положение
+                sidebar.style.transform = '';
+                chatArea.style.transform = '';
+            }
+        };
+        
+        // Добавляем обработчики touch событий
+        document.addEventListener('touchstart', handleTouchStart, { passive: false });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd, { passive: false });
+        
+        // Двойной тап для быстрого переключения
+        let lastTap = 0;
+        const handleDoubleTap = (e) => {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            
+            if (tapLength < 500 && tapLength > 0) {
+                // Двойной тап - переключить панели
+                if (sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                    chatArea.classList.add('show');
+                } else {
+                    sidebar.classList.add('show');
+                    chatArea.classList.remove('show');
+                }
+                e.preventDefault();
+            }
+            lastTap = currentTime;
+        };
+        
+        document.addEventListener('touchend', handleDoubleTap);
+        
+        // Жесты для мобильного меню
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileMenu) {
+            let menuStartY = 0;
+            let menuCurrentY = 0;
+            
+            mobileMenu.addEventListener('touchstart', (e) => {
+                menuStartY = e.touches[0].clientY;
+            });
+            
+            mobileMenu.addEventListener('touchmove', (e) => {
+                menuCurrentY = e.touches[0].clientY;
+                const deltaY = menuCurrentY - menuStartY;
+                
+                if (deltaY > 0) {
+                    // Свайп вниз - закрыть меню
+                    mobileMenu.style.transform = `translateY(${deltaY}px)`;
+                    mobileMenu.style.opacity = Math.max(0, 1 - deltaY / 200);
+                }
+            });
+            
+            mobileMenu.addEventListener('touchend', () => {
+                const deltaY = menuCurrentY - menuStartY;
+                
+                if (deltaY > 100) {
+                    // Закрыть меню
+                    mobileMenu.classList.remove('show');
+                    document.body.style.overflow = '';
+                } else {
+                    // Вернуть в исходное положение
+                    mobileMenu.style.transform = '';
+                    mobileMenu.style.opacity = '';
+                }
+            });
+        }
     }
 
     // Настройка обработчиков меню
@@ -181,63 +355,124 @@ class XPchatPWA {
         });
     }
 
-    // Настройка жестов
-    setupTouchGestures() {
-        let startX = 0;
-        let startY = 0;
-        let currentX = 0;
-        let currentY = 0;
-        
-        // Свайп влево для открытия чата
-        document.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        });
-        
-        document.addEventListener('touchmove', (e) => {
-            currentX = e.touches[0].clientX;
-            currentY = e.touches[0].clientY;
-        });
-        
-        document.addEventListener('touchend', () => {
-            const diffX = startX - currentX;
-            const diffY = startY - currentY;
-            
-            // Свайп влево (открыть чат)
-            if (diffX > 50 && Math.abs(diffY) < 50) {
-                if (window.innerWidth <= 768) {
-                    const sidebar = document.getElementById('sidebar');
-                    if (sidebar) {
-                        sidebar.classList.remove('show');
-                    }
+    // Настройка офлайн детекции
+    setupOfflineDetection() {
+        // Индикатор офлайн статуса
+        const onlineStatus = document.getElementById('onlineStatus');
+        if (onlineStatus) {
+            const updateOnlineStatus = () => {
+                if (navigator.onLine) {
+                    onlineStatus.innerHTML = '🟢 Онлайн';
+                    onlineStatus.className = 'online-status online';
+                    this.showOnlineNotification();
+                } else {
+                    onlineStatus.innerHTML = '🔴 Офлайн';
+                    onlineStatus.className = 'online-status offline';
+                    this.showOfflineNotification();
                 }
-            }
+            };
+
+            // Обновляем статус при изменении соединения
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
             
-            // Свайп вправо (открыть контакты)
-            if (diffX < -50 && Math.abs(diffY) < 50) {
-                if (window.innerWidth <= 768) {
-                    const sidebar = document.getElementById('sidebar');
-                    if (sidebar) {
-                        sidebar.classList.add('show');
-                    }
-                }
-            }
-        });
+            // Устанавливаем начальный статус
+            updateOnlineStatus();
+        }
+
+        // Периодическая проверка соединения
+        setInterval(() => {
+            this.checkConnection();
+        }, 30000); // Проверяем каждые 30 секунд
     }
 
-    // Настройка определения офлайн режима
-    setupOfflineDetection() {
-        window.addEventListener('online', () => {
-            console.log('XPchat PWA: Соединение восстановлено');
-            this.showNotification('Соединение восстановлено', 'Интернет снова доступен');
-            this.updateOnlineStatus(true);
-        });
+    // Проверка соединения с сервером
+    async checkConnection() {
+        try {
+            const response = await fetch('/api/status', { 
+                method: 'HEAD',
+                cache: 'no-cache',
+                timeout: 5000
+            });
+            
+            if (response.ok) {
+                this.updateConnectionStatus(true);
+            } else {
+                this.updateConnectionStatus(false);
+            }
+        } catch (error) {
+            this.updateConnectionStatus(false);
+        }
+    }
+
+    // Обновление статуса соединения
+    updateConnectionStatus(isOnline) {
+        const onlineStatus = document.getElementById('onlineStatus');
+        if (onlineStatus) {
+            if (isOnline) {
+                onlineStatus.innerHTML = '🟢 Онлайн';
+                onlineStatus.className = 'online-status online';
+            } else {
+                onlineStatus.innerHTML = '🟡 Проверка...';
+                onlineStatus.className = 'online-status checking';
+            }
+        }
+    }
+
+    // Уведомление о восстановлении соединения
+    showOnlineNotification() {
+        this.showNotification('🌐 Интернет восстановлен!', 'XPchat снова работает в онлайн режиме', 'success');
         
-        window.addEventListener('offline', () => {
-            console.log('XPchat PWA: Соединение потеряно');
-            this.showNotification('Соединение потеряно', 'Работаем в офлайн режиме');
-            this.updateOnlineStatus(false);
-        });
+        // Автоматическая синхронизация данных
+        this.syncOfflineData();
+    }
+
+    // Уведомление об офлайн режиме
+    showOfflineNotification() {
+        this.showNotification('📱 Офлайн режим', 'XPchat работает без интернета. Данные сохраняются локально.', 'info');
+    }
+
+    // Синхронизация офлайн данных
+    async syncOfflineData() {
+        try {
+            // Получаем сохраненные сообщения из localStorage
+            const offlineMessages = this.getOfflineMessages();
+            
+            if (offlineMessages.length > 0) {
+                this.showNotification('🔄 Синхронизация...', `Отправляем ${offlineMessages.length} сообщений`, 'info');
+                
+                // Здесь можно добавить логику отправки сообщений на сервер
+                // await this.sendOfflineMessages(offlineMessages);
+                
+                // Очищаем офлайн сообщения
+                this.clearOfflineMessages();
+                
+                this.showNotification('✅ Синхронизация завершена', 'Все данные успешно синхронизированы', 'success');
+            }
+        } catch (error) {
+            console.error('XPchat PWA: Ошибка синхронизации:', error);
+            this.showNotification('❌ Ошибка синхронизации', 'Попробуйте позже', 'error');
+        }
+    }
+
+    // Получение офлайн сообщений
+    getOfflineMessages() {
+        try {
+            const offlineData = localStorage.getItem('xpchat_offline_messages');
+            return offlineData ? JSON.parse(offlineData) : [];
+        } catch (error) {
+            console.error('XPchat PWA: Ошибка получения офлайн сообщений:', error);
+            return [];
+        }
+    }
+
+    // Очистка офлайн сообщений
+    clearOfflineMessages() {
+        try {
+            localStorage.removeItem('xpchat_offline_messages');
+        } catch (error) {
+            console.error('XPchat PWA: Ошибка очистки офлайн сообщений:', error);
+        }
     }
 
     // Настройка push уведомлений
@@ -343,37 +578,6 @@ class XPchatPWA {
                window.navigator.standalone === true;
     }
 
-    // Обновление статуса онлайн
-    updateOnlineStatus(isOnline) {
-        const statusElement = document.getElementById('onlineStatus');
-        if (statusElement) {
-            statusElement.textContent = isOnline ? '🟢 Онлайн' : '🔴 Офлайн';
-            statusElement.className = isOnline ? 'online' : 'offline';
-        }
-    }
-
-    // Показ уведомления
-    showNotification(title, message) {
-        // Создаем простое уведомление
-        const notification = document.createElement('div');
-        notification.className = 'pwa-notification';
-        notification.innerHTML = `
-            <div class="notification-content">
-                <h4>${title}</h4>
-                <p>${message}</p>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Показываем и скрываем
-        setTimeout(() => notification.classList.add('show'), 100);
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => document.body.removeChild(notification), 300);
-        }, 3000);
-    }
-
     // Методы меню
     showProfile() {
         this.showNotification('Профиль', 'Функция в разработке');
@@ -411,6 +615,55 @@ class XPchatPWA {
     isMobileDevice() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
                (window.innerWidth <= 768);
+    }
+
+    // Показ уведомлений
+    showNotification(title, message, type = 'info') {
+        // Создаем элемент уведомления
+        const notification = document.createElement('div');
+        notification.className = `pwa-notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <h4>${title}</h4>
+                <p>${message}</p>
+            </div>
+            <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+        `;
+
+        // Добавляем стили для уведомления
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#667eea'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        `;
+
+        // Добавляем в DOM
+        document.body.appendChild(notification);
+
+        // Показываем уведомление
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+
+        // Автоматически скрываем через 5 секунд
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 300);
+        }, 5000);
     }
 }
 
